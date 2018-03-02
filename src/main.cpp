@@ -246,36 +246,51 @@ int main() {
 		double ref_yaw = deg2rad(car_yaw);
 
 		if (prev_size > 0)
-		{
 			car_s = end_path_s;
-		}
+
 		bool too_close = false;
 		
 		for (int i = 0; i < sensor_fusion.size(); ++i)
 		{
+			double vx = sensor_fusion[i][3];
+			double vy = sensor_fusion[i][4];
+			double check_car_s = sensor_fusion[i][5];
 			float d = sensor_fusion[i][6];
+			double check_speed = sqrt(vx * vx + vy * vy);
+			check_car_s += ((double)prev_size * 0.02 * check_speed);
 
-			if (d < (2 + 4 * lane + 2) && d > (2 + 4 * lane - 2))
+
+			if (d < (2 + 4 * lane + 2) && d > (2 + 4 * lane - 2) && (check_car_s > car_s) && ((check_car_s - car_s) < 30))
 			{
-				double vx = sensor_fusion[i][3];
-				double vy = sensor_fusion[i][4];
-				double check_speed = sqrt(vx * vx + vy * vy);
-				double check_car_s = sensor_fusion[i][5];
-
-				check_car_s += ((double)prev_size * 0.02 * check_speed);
-
-				if ((check_car_s > car_s) && (check_car_s - car_s) < 30)
+				//car is in front of our car and in the same lane
+				/*
+				for (int j = 0; j < sensor_fusion.size(); ++j)
 				{
-					//too_close = true;
-					//if (lane >= 1)
-					//	lane = lane - 1;
-					//if (lane == 0)
-					//	lane += 1;
-					lane -= 1;
+					;
 				}
+				*/
+				/*
+				if (d < (2 + 4 * lane + 2) && d > (2 + 4 * lane - 2))
+				{
+					//cout << "car is in same lane" << endl;
+					if (check_car_s > car_s)
+					{
+						too_close = true;
+						//try to find another direction
+					}
+				}
+				else if (d < (2 + 4 * lane - 2))
+				{
+					// car is left
+					cout << "car is in left lane" << endl;
+				}
+				else if (d > (2 + 4 * lane + 2))
+				{
+					// car is right
+				}
+				*/
 			}
 		}
-
 		if (too_close)
 			ref_vel -= .224;
 		else if (ref_vel < 49.5)
