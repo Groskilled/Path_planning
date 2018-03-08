@@ -86,3 +86,4 @@ If there is a car, we try to drive past it by changing lane when there is no oth
 
 To avoid chaging our trajectory too quickly, we use the last 2 points in the previous_path variable (line 313 -> 325).
 We then use our and the targeted lane to get points for car_position + 30, +60 and +90 (line 327 -> 329). Points are shifted to local coordinates and then we use spline to get a nice trajectory.
+[!alt text](images/min_dist_ok.png)
